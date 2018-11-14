@@ -7,9 +7,9 @@
 <script src="matrix4.js"></script>
 
 <script id="vertex-shader" type="not-javascript">
-    attribute vec4 position;
+    attribute vec3 coordinates;
     void main(){
-        gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
+        gl_Position = vec4(coordinates, 1.0);
         gl_PointSize = 10.0;
     }
 </script>
@@ -36,7 +36,7 @@
     function initializeAndStartRendering() {
         initGL();
 
-        //createShaders();
+        createShaders();
         //createTriangleGeometry();
         //createLineGridGeometry();
 
@@ -60,8 +60,8 @@
     function createCompiledShader(shaderText, shaderType) {
         var shader = gl.createShader(shaderType);
 
-        gl.shaderSource(shaderType, shaderText );
-        gl.compileShader(shaderText);
+        gl.shaderSource(shader, shaderText );
+        gl.compileShader(shader);
 
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
             alert(gl.getShaderInfoLog(shader));
@@ -76,9 +76,12 @@
 
         var vertexShaderText = document.getElementById("vertex-shader").textContent;
         var vertexShader = createCompiledShader(vertexShaderText, gl.VERTEX_SHADER);
-
+        var error_log = gl.getShaderInfoLog(vertexShader);
+        console.log(error_log);
         var fragmentShaderText = document.getElementById("fragment-shader").textContent;
         var fragmentShader = createCompiledShader(fragmentShaderText, gl.FRAGMENT_SHADER);
+        var error_log = gl.getShaderInfoLog(fragmentShader);
+        console.log(error_log);
     }
 
 
