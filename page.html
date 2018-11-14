@@ -16,13 +16,14 @@
 
     varying vec3 vColor;
 
-    void main(){
+    void main(void){
         gl_Position = 
             uProjectionMatrix *
             uViewMatrix *
             uWorldMatrix *
             vec4(aVertexPosition, 1.0);
-            vColor = aVertexColor;
+            
+        vColor = aVertexColor;
     }
 </script>
 
@@ -134,8 +135,8 @@
     function createShaders() {
         // Get the objects representing individual shaders
         
-        var vertexShaderText = document.getElementById("vertex-shader").textContent;
-        //var vertexShaderText = document.getElementById("shader-vs").textContent;
+        //var vertexShaderText = document.getElementById("vertex-shader").textContent;
+        var vertexShaderText = document.getElementById("shader-vs").textContent;
         var vertexShader = createCompiledShader(vertexShaderText, gl.VERTEX_SHADER);
         var error_log = gl.getShaderInfoLog(vertexShader);
         console.log(error_log);
