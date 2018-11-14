@@ -18,16 +18,34 @@
     // the shader that will be used by each piece of geometry (they could each use their own shader but in this case it will be the same)
     var shaderProgram;
 
+    //Vertex shader
+    var VSHADER_SOURCE = 
+        'void main(){\n' +
+        'gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n' +
+        'gl_PointSize = 10.0;\n' +
+        '}\n';
+
+    //Fragment shader
+    var FSHADER_SOURCE = 
+        'void main(){\n' +
+        'gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
+        '}\n';
+
     // -------------------------------------------------------------------------
     function initializeAndStartRendering() {
         initGL();
+
+        //createShaders();
+        //createTriangleGeometry();
+        //createLineGridGeometry();
+
         updateAndRender();
     }
 
     // -------------------------------------------------------------------------
     // Get a valid link to the GL "context"
     function initGL(canvas) {
-        var canvas = document.getElementById(/* todo - choose correct id */);
+        var canvas = document.getElementById("webgl-canvas");
 
         try {
             gl = canvas.getContext("webgl");
@@ -38,12 +56,37 @@
         }
     }
 
+    function createCompiledShader(shaderText, shaderType) {
+        var shader = gl.createShader(shaderType);
+
+        gl.shaderSource(shaderText, shaderType);
+        gl.compileShader(shaderText);
+
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            alert(gl.getShaderInfoLog(shader));
+            console.log(gl.getShaderInfoLog(shader));
+            return null;
+        }
+        return shader;
+    }
+
+    function createShaders() {
+        // Get the objects representing individual shaders
+
+        // todo get access to the shader source code text and compile
+        var vertexShaderText = document.getElementById(VSHADER_SOURCE).textContent;
+        var vertexShader = createCompiledShader(vertexShaderText, gl.VERTEX_SHADER);
+
+        var fragmentShaderText = document.getElementById(FSHADER_SOURCE).textContent;
+        var fragmentShader = createCompiledShader(fragmentShaderText, gl.FRAGMENT_SHADER);
+    }
+
 
     // -------------------------------------------------------------------------
     function updateAndRender() {
-        requestAnimationFrame(render);
+        //requestAnimationFrame(render);
 
-        gl.viewport(0, 0, /* todo - width of viewport */, /* todo - height of viewport */);
+        gl.viewport(0, 0, 1024, 768);
 
         gl.clearColor(0.707, 0.707, 1, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
