@@ -6,6 +6,20 @@
 <script src="vector3.js"></script>
 <script src="matrix4.js"></script>
 
+<script id="vertex-shader" type="not-javascript">
+    attribute vec4 position;
+    void main(){
+        gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
+        gl_PointSize = 10.0;
+    }
+</script>
+
+<script id="fragment-shader" type="not-javascript">
+    void main(){
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    }
+</script>
+
 <script type="text/javascript">
 
     // the main variable through which we will interact with webgl
@@ -17,19 +31,6 @@
 
     // the shader that will be used by each piece of geometry (they could each use their own shader but in this case it will be the same)
     var shaderProgram;
-
-    //Vertex shader
-    var VSHADER_SOURCE = 
-        'void main(){\n' +
-        'gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n' +
-        'gl_PointSize = 10.0;\n' +
-        '}\n';
-
-    //Fragment shader
-    var FSHADER_SOURCE = 
-        'void main(){\n' +
-        'gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
-        '}\n';
 
     // -------------------------------------------------------------------------
     function initializeAndStartRendering() {
@@ -59,7 +60,7 @@
     function createCompiledShader(shaderText, shaderType) {
         var shader = gl.createShader(shaderType);
 
-        gl.shaderSource(shaderText, shaderType);
+        gl.shaderSource(shaderType, shaderText );
         gl.compileShader(shaderText);
 
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
@@ -73,11 +74,10 @@
     function createShaders() {
         // Get the objects representing individual shaders
 
-        // todo get access to the shader source code text and compile
-        var vertexShaderText = document.getElementById(VSHADER_SOURCE).textContent;
+        var vertexShaderText = document.getElementById("vertex-shader").textContent;
         var vertexShader = createCompiledShader(vertexShaderText, gl.VERTEX_SHADER);
 
-        var fragmentShaderText = document.getElementById(FSHADER_SOURCE).textContent;
+        var fragmentShaderText = document.getElementById("fragment-shader").textContent;
         var fragmentShader = createCompiledShader(fragmentShaderText, gl.FRAGMENT_SHADER);
     }
 
