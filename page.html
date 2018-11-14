@@ -6,6 +6,26 @@
 <script src="vector3.js"></script>
 <script src="matrix4.js"></script>
 
+<script id="shader-vs" type="x-shader/x-vertex">
+    attribute vec3 aVertexPosition;
+    attribute vec3 aVertexColor;
+
+    uniform mat4 uWorldMatrix;
+    uniform mat4 uViewMatrix;
+    uniform mat4 uProjectionMatrix;
+
+    varying vec3 vColor;
+
+    void main(){
+        gl_Position = 
+            uProjectionMatrix *
+            uViewMatrix *
+            uWorldMatrix *
+            vec4(aVertexPosition, 1.0);
+            vColor = aVertexColor;
+    }
+</script>
+
 <script id="vertex-shader" type="not-javascript">
     attribute vec3 coordinates;
     void main(){
@@ -32,15 +52,55 @@
     // the shader that will be used by each piece of geometry (they could each use their own shader but in this case it will be the same)
     var shaderProgram;
 
+    var triangleGeometry = {
+        // The core elements that we will need to render this object
+        worldMatrix: null,               // the matrix that transforms this object from local space to world space
+        shaderProgram: null,         // the shader program of "how" to render this object (vertex & fragment)
+        positionBuffer: null,            // the buffer that holds all of the data associated with a vertex position
+        colorBuffer: null,                 // the buffer that holds all of the data associated with a vertex color
+        bufferItemCount: 3,            // how many vertices the buffer contains
+    }
+
     // -------------------------------------------------------------------------
     function initializeAndStartRendering() {
         initGL();
 
         createShaders();
-        //createTriangleGeometry();
+
+        /*
+        var vertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+        gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(a_Position);
+        */
+        // gl.useProgram(shaderProgram);
+        
+        createTriangleGeometry();
         //createLineGridGeometry();
 
         updateAndRender();
+    }
+
+    function createTriangleGeometry(){
+        // create the position and color information for this object and send it to the GPU
+        var newBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, newBuffer);
+        var vertices = [
+            0.0,  1.0,  0.0,      // (vertex 1: x, y, z)
+            -1.0, -1.0,  0.0,     // (vertex 2: x, y, z)
+            1.0, -1.0,  0.0,       // (vertex 3: x, y, z)
+        ];
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+        // allocate a matrix that we will reuse for this object
+        triangleGeometry.worldMatrix = new Matrix4();
+        
+        // specify the shaders which carries the instructions for "how" to render
+        triangleGeometry.shaderProgram = shaderProgram;
+        triangleGeometry.positionBuffer = newBuffer;
+
+        triangleGeometry.colorBuffer = newColorBuffer;
     }
 
     // -------------------------------------------------------------------------
@@ -73,8 +133,9 @@
 
     function createShaders() {
         // Get the objects representing individual shaders
-
+        
         var vertexShaderText = document.getElementById("vertex-shader").textContent;
+        //var vertexShaderText = document.getElementById("shader-vs").textContent;
         var vertexShader = createCompiledShader(vertexShaderText, gl.VERTEX_SHADER);
         var error_log = gl.getShaderInfoLog(vertexShader);
         console.log(error_log);
@@ -82,6 +143,19 @@
         var fragmentShader = createCompiledShader(fragmentShaderText, gl.FRAGMENT_SHADER);
         var error_log = gl.getShaderInfoLog(fragmentShader);
         console.log(error_log);
+
+
+        //Todo #5 in the book, not sure if should be in sep function
+        shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+
+        // Tell gl it's ready to go, link it
+        gl.linkProgram(shaderProgram);
+        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+            alert("Could not initialise shaders");
+        }
+         
     }
 
 
