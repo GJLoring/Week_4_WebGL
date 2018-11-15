@@ -27,15 +27,7 @@
     }
 </script>
 
-<script id="vertex-shader" type="not-javascript">
-    attribute vec3 coordinates;
-    void main(){
-        gl_Position = vec4(coordinates, 1.0);
-        gl_PointSize = 10.0;
-    }
-</script>
-
-<script id="fragment-shader" type="not-javascript">
+<script id="fragment-shader" type="x-shader/x-fragment">
     void main(){
         gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     }
@@ -135,11 +127,35 @@
         gl.uniformMatrix4fv(shaderProgram.worldMatrixUniform, false, triangleGeometry.worldMatrix.clone().transpose().elements);
         gl.uniformMatrix4fv(shaderProgram.viewMatrixUniform, false, viewMatrix.clone().transpose().elements);
         gl.uniformMatrix4fv(shaderProgram.projectionMatrixUniform, false, projectionMatrix.clone().transpose().elements);
+
+        gl.vertexAttribPointer(
+            triangleGeometry.shaderProgram.vertexPositionAttribute, // a reference to the attribute on the shader
+            3,                // number of floats
+            gl.FLOAT,   // type is float
+            gl.FALSE,   // ignore
+            0, // stride - used for mixing data in a single buffer, ignore
+            0  // offset - used for mixing data in a single buffer, ignore
+        );
+
+
+        gl.vertexAttribPointer(
+            // todo for colorAttribute
+            triangleGeometry.shaderProgram.vertexColorAttribute, // a reference to the attribute on the shader
+            3,                // number of floats
+            gl.FLOAT,   // type is float
+            gl.FALSE,   // ignore
+            0, // stride - used for mixing data in a single buffer, ignore
+            0  // offset - used for mixing data in a single buffer, ignore
+
+        );
+
+        // Gabe Note Stuck here, fragment shader is incorrect causing this error I believe
+        gl.drawArrays(gl.TRIANGLES, 0, triangleGeometry.bufferItemCount);
     }
 
 
-    function uniformMatrix4fv() {
-    }
+    //function uniformMatrix4fv() {
+    //}
 
     // -------------------------------------------------------------------------
     // Get a valid link to the GL "context"
@@ -195,7 +211,6 @@
         if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
             alert("Could not initialise shaders");
         }
-
     }
 
 
@@ -207,6 +222,8 @@
 
         gl.clearColor(0.707, 0.707, 1, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        renderTriangle();
     }
 
 </script>
