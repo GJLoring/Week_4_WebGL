@@ -17,12 +17,12 @@
     varying vec3 vColor;
 
     void main(void){
-        gl_Position = 
+        gl_Position =
             uProjectionMatrix *
             uViewMatrix *
             uWorldMatrix *
             vec4(aVertexPosition, 1.0);
-            
+
         vColor = aVertexColor;
     }
 </script>
@@ -76,7 +76,7 @@
         gl.enableVertexAttribArray(a_Position);
         */
         // gl.useProgram(shaderProgram);
-        
+
         createTriangleGeometry();
         //createLineGridGeometry();
 
@@ -96,12 +96,49 @@
 
         // allocate a matrix that we will reuse for this object
         triangleGeometry.worldMatrix = new Matrix4();
-        
+
         // specify the shaders which carries the instructions for "how" to render
         triangleGeometry.shaderProgram = shaderProgram;
         triangleGeometry.positionBuffer = newBuffer;
 
+
+        var newColorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, newColorBuffer);
+        var rgb = [
+            0.0,  1.0,  0.0,      // (rgb)
+        ];
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(rgb), gl.STATIC_DRAW);
         triangleGeometry.colorBuffer = newColorBuffer;
+
+        // Gabe note, this ( code from here to end of function ) feels like it should go in an event loop
+        // Make sure the WebGL state knows this is the program we're working with
+        gl.useProgram(shaderProgram);
+
+        // Get a reference to the attribute "aVertexPosition"
+        shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+
+        // Turn on this attribute
+        gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+
+        // Do the same thing for our other piece of data (1d color)
+        shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
+        gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
+
+        shaderProgram.worldMatrixUniform  = gl.getUniformLocation(shaderProgram, "uWorldMatrix");
+        shaderProgram.viewMatrixUniform = gl.getUniformLocation(shaderProgram, "uViewMatrix");
+        shaderProgram.projectionMatrixUniform = gl.getUniformLocation(shaderProgram, "uProjectionMatrix");
+
+    }
+
+    function renderTriangle() {
+        // Send our matrices to the shader
+        gl.uniformMatrix4fv(shaderProgram.worldMatrixUniform, false, triangleGeometry.worldMatrix.clone().transpose().elements);
+        gl.uniformMatrix4fv(shaderProgram.viewMatrixUniform, false, viewMatrix.clone().transpose().elements);
+        gl.uniformMatrix4fv(shaderProgram.projectionMatrixUniform, false, projectionMatrix.clone().transpose().elements);
+    }
+
+
+    function uniformMatrix4fv() {
     }
 
     // -------------------------------------------------------------------------
@@ -116,6 +153,8 @@
         if (!gl) {
             alert("Could not initialise WebGL, sorry :-(");
         }
+
+        gl.enable(gl.DEPTH_TEST);
     }
 
     function createCompiledShader(shaderText, shaderType) {
@@ -134,7 +173,7 @@
 
     function createShaders() {
         // Get the objects representing individual shaders
-        
+
         //var vertexShaderText = document.getElementById("vertex-shader").textContent;
         var vertexShaderText = document.getElementById("shader-vs").textContent;
         var vertexShader = createCompiledShader(vertexShaderText, gl.VERTEX_SHADER);
@@ -156,7 +195,7 @@
         if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
             alert("Could not initialise shaders");
         }
-         
+
     }
 
 
