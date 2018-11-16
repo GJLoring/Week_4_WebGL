@@ -29,7 +29,7 @@
 
 <script id="fragment-shader" type="x-shader/x-fragment">
     void main(){
-        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 0.1);
     }
 </script>
 
@@ -59,21 +59,15 @@
         initGL();
 
         createShaders();
-
-        /*
-        var vertexBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-        gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(a_Position);
-        */
-        // gl.useProgram(shaderProgram);
-
         createTriangleGeometry();
-        //createLineGridGeometry();
+        createLineGridGeometry();
 
         updateAndRender();
     }
+
+    function createLineGridGeometry(){}
+
+
 
     function createTriangleGeometry(){
         // create the position and color information for this object and send it to the GPU
@@ -95,15 +89,16 @@
 
 
         var newColorBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, newColorBuffer);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, newColorBuffer);
         var rgb = [
             0.0,  1.0,  0.0,      // (rgb)
         ];
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(rgb), gl.STATIC_DRAW);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Float32Array(rgb), gl.STATIC_DRAW);
         triangleGeometry.colorBuffer = newColorBuffer;
 
         // Gabe note, this ( code from here to end of function ) feels like it should go in an event loop
         // Make sure the WebGL state knows this is the program we're working with
+
         gl.useProgram(shaderProgram);
 
         // Get a reference to the attribute "aVertexPosition"
@@ -149,13 +144,9 @@
 
         );
 
-        // Gabe Note Stuck here, fragment shader is incorrect causing this error I believe
         gl.drawArrays(gl.TRIANGLES, 0, triangleGeometry.bufferItemCount);
     }
 
-
-    //function uniformMatrix4fv() {
-    //}
 
     // -------------------------------------------------------------------------
     // Get a valid link to the GL "context"
@@ -216,7 +207,10 @@
 
     // -------------------------------------------------------------------------
     function updateAndRender() {
-        //requestAnimationFrame(render);
+        var seconds = timeElapsed * 0.001;
+        var rotation = Math.sin(seconds)*0.5;
+
+
 
         gl.viewport(0, 0, 1024, 768);
 
