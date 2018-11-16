@@ -29,7 +29,7 @@
 
 <script id="fragment-shader" type="x-shader/x-fragment">
     void main(){
-        gl_FragColor = vec4(0.0, 0.0, 0.0, 0.1);
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 0.1);
     }
 </script>
 
@@ -65,7 +65,8 @@
         updateAndRender();
     }
 
-    function createLineGridGeometry(){}
+    function createLineGridGeometry(){
+    }
 
 
 
@@ -206,7 +207,7 @@
 
 
     // -------------------------------------------------------------------------
-    function updateAndRender() {
+    function updateAndRender(timeElapsed) {
         var seconds = timeElapsed * 0.001;
         var rotation = Math.sin(seconds)*0.5;
 
