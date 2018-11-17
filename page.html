@@ -6,6 +6,7 @@
 <script src="math/vector3.js"></script>
 <script src="math/matrix4.js"></script>
 
+<!-- vertex shader - Our part in the geometry processing part of the pipeline happens here -->
 <script id="shader-vs" type="x-shader/x-vertex">
     attribute vec3 aVertexPosition;
     attribute vec3 aVertexColor;
@@ -98,13 +99,12 @@
     function createShaders() {
         // Get the objects representing individual shaders
         var vertexShaderText = document.getElementById("shader-vs").textContent;
-        var vertexShader = createCompiledShader(vertexShaderText, gl.VERTEX_SHADER);
+        var vertexShader = createCompiledShader(gl, vertexShaderText, gl.VERTEX_SHADER);
 
         var fragmentShaderText = document.getElementById("shader-fs").textContent;
-        var fragmentShader = createCompiledShader(fragmentShaderText, gl.FRAGMENT_SHADER);
+        var fragmentShader = createCompiledShader(gl, fragmentShaderText, gl.FRAGMENT_SHADER);
 
-
-        //Todo #5 in the book, not sure if should be in sep function
+        // Create an empty gl "program" which will be composed of compiled shaders
         shaderProgram = gl.createProgram();
         gl.attachShader(shaderProgram, vertexShader);
         gl.attachShader(shaderProgram, fragmentShader);
@@ -133,7 +133,7 @@
     }
 
     // -------------------------------------------------------------------------
-    function createCompiledShader(shaderText, shaderType) {
+    function createCompiledShader(gl, shaderText, shaderType) {
         var shader = gl.createShader(shaderType);
 
         gl.shaderSource(shader, shaderText );
@@ -163,36 +163,27 @@
 
         // specify the shader which carries the instructions for "how" to render
         triangleGeometry.shaderProgram = shaderProgram;
-        triangleGeometry.positionBuffer = newBuffer;
-
 
         var positionBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, positionBuffer);
-        var rgb = [
-            0.0,  1.0,  0.0,      // (rgb)
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        var positions = [
+            0.0,    1.0,   0.0,
+            -1.0,  -1.0,   0.0,
+            1.0,   -1.0,   0.0
         ];
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Float32Array(rgb), gl.STATIC_DRAW);
-        triangleGeometry.colorBuffer = positionBuffer;
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
-        // Gabe note, this ( code from here to end of function ) feels like it should go in an event loop
-        // Make sure the WebGL state knows this is the program we're working with
+        var colorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        var colors = [
+            1.0,    0.0,   0.0,
+            0.0,    1.0,   0.0,
+            0.0,    0.0,   1.0
+        ];
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 
-        gl.useProgram(shaderProgram);
-
-        // Get a reference to the attribute "aVertexPosition"
-        shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-
-        // Turn on this attribute
-        gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-
-        // Do the same thing for our other piece of data (1d color)
-        shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
-        gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
-
-        shaderProgram.worldMatrixUniform  = gl.getUniformLocation(shaderProgram, "uWorldMatrix");
-        shaderProgram.viewMatrixUniform = gl.getUniformLocation(shaderProgram, "uViewMatrix");
-        shaderProgram.projectionMatrixUniform = gl.getUniformLocation(shaderProgram, "uProjectionMatrix");
-
+        triangleGeometry.positionBuffer = positionBuffer;
+        triangleGeometry.colorBuffer = colorBuffer;
     }
 
     // -------------------------------------------------------------------------
@@ -270,6 +261,7 @@
         gl.uniformMatrix4fv(shaderProgram.viewMatrixUniform, false, viewMatrix.clone().transpose().elements);
         gl.uniformMatrix4fv(shaderProgram.projectionMatrixUniform, false, projectionMatrix.clone().transpose().elements);
 
+        gl.bindBuffer(gl.ARRAY_BUFFER, triangleGeometry.positionBuffer);
         gl.vertexAttribPointer(
             triangleGeometry.shaderProgram.vertexPositionAttribute,
             3,
@@ -279,7 +271,7 @@
             0  // offset - used for mixing data in a single buffer, ignore
         );
 
-        //gl.bindBuffer(gl.ARRAY_BUFFER, triangleGeometry.colorBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, triangleGeometry.colorBuffer);
         gl.vertexAttribPointer(
             shaderProgram.vertexColorAttribute,
             3,
