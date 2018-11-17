@@ -49,7 +49,7 @@
         shaderProgram: null,     // the shader program of "how" to render this object (vertex & fragment)
         positionBuffer: null,    // the buffer that holds all of the position data
         colorBuffer: null,       // the buffer that holds all of the color data
-        bufferItemCount: 3,   // how many vertices the buffer contains
+        bufferItemCount: 3,      // GJL NOTE null in sample?! how many vertices the buffer contains
     };
 
     // The core data associated with the line grid that we will need to render it
@@ -257,6 +257,9 @@
         // 60 degrees per second
         var degrees = secondsElapsedSinceStart * 60;
         // Send our matrices to the shader
+        // todo update the triangle geometry world matrix here (used to place the triangle into world space)
+        // todo set view matrix to identity
+        // todo set the projection matrix using values from online guide
         gl.uniformMatrix4fv(shaderProgram.worldMatrixUniform, false, triangleGeometry.worldMatrix.clone().transpose().elements);
         gl.uniformMatrix4fv(shaderProgram.viewMatrixUniform, false, viewMatrix.clone().transpose().elements);
         gl.uniformMatrix4fv(shaderProgram.projectionMatrixUniform, false, projectionMatrix.clone().transpose().elements);
