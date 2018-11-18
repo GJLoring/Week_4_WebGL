@@ -80,12 +80,13 @@
     }
 
     // -------------------------------------------------------------------------
-// Get a valid link to the GL "context"
     function initGL(canvas) {
         var canvas = document.getElementById("webgl-canvas");
 
         try {
             gl = canvas.getContext("webgl");
+            gl.canvasWidth = canvas.width;
+            gl.canvasHeight = canvas.height;
         } catch (e) {}
 
         if (!gl) {
@@ -150,15 +151,6 @@
     // -------------------------------------------------------------------------
     function createTriangleGeometry() {
         // allocate a matrix that we will reuse for this object (situate it in the world)
-
-        var newBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, newBuffer);
-        var vertices = [
-            0.0,  1.0,  0.0,      // (vertex 1: x, y, z)
-            -1.0, -1.0,  0.0,     // (vertex 2: x, y, z)
-            1.0, -1.0,  0.0,       // (vertex 3: x, y, z)
-        ];
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         triangleGeometry.worldMatrix = new Matrix4();
 
         // specify the shader which carries the instructions for "how" to render
@@ -195,7 +187,6 @@
         triangleGeometry.shaderProgram = shaderProgram;
 
         var positionBuffer = gl.createBuffer();
-
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
         var linePositions = [];
@@ -231,7 +222,6 @@
         lineGridGeometry.positionBuffer = positionBuffer;
         lineGridGeometry.colorBuffer = colorBuffer;
         lineGridGeometry.bufferItemCount = 2 * 21 * 2;
-
     }
 
     // -------------------------------------------------------------------------
@@ -256,7 +246,7 @@
         // calculate the number of degrees we should have rotated given how much time has elapsed
         // 60 degrees per second
         var degrees = secondsElapsedSinceStart * 60;
-        // Send our matrices to the shader
+
         // todo update the triangle geometry world matrix here (used to place the triangle into world space)
         // todo set view matrix to identity
         // todo set the projection matrix using values from online guide
@@ -306,8 +296,9 @@
         // below is done for you, uncomment when ready
 
         //gl.uniform1f(shaderProgram.timeUniform, time.secondsElapsedSinceStart);
+        gl.uniform1f(shaderProgram.timeUniform, 1);  //need to figure out time.secondsElapsedSinceStart is this soething we create
 
-        // gl.drawArrays(gl.LINES, 0, lineGridGeometry.bufferItemCount);
+        gl.drawArrays(gl.LINES, 0, lineGridGeometry.bufferItemCount);
     }
 
 </script>
