@@ -282,7 +282,7 @@
 
         gl.bindBuffer(gl.ARRAY_BUFFER, triangleGeometry.colorBuffer);
         gl.vertexAttribPointer(
-            shaderProgram.vertexColorAttribute,
+            triangleGeometry.shaderProgram.vertexColorAttribute,
             3,
             gl.FLOAT,
             gl.FALSE,
@@ -313,7 +313,7 @@
         // todo bind and map(gl.vertexAttribPointer) the buffers
         gl.bindBuffer(gl.ARRAY_BUFFER, lineGridGeometry.positionBuffer);
         gl.vertexAttribPointer(
-            shaderProgram.vertexPositionAttribute,
+            lineGridGeometry.shaderProgram.vertexPositionAttribute,
             3,
             gl.FLOAT,
             gl.FALSE,
@@ -323,7 +323,7 @@
 
         gl.bindBuffer(gl.ARRAY_BUFFER, lineGridGeometry.colorBuffer);
         gl.vertexAttribPointer(
-            shaderProgram.vertexColorAttribute,
+            lineGridGeometry.shaderProgram.vertexColorAttribute,
             3,
             gl.FLOAT,
             gl.FALSE,
