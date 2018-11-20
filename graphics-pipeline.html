@@ -195,9 +195,9 @@
         // specify the horizontal lines
         for (var i = -10; i <= 10; ++i) {
          // add position for line start point (x value should be i)   
-         linePositions.push.apply( linePositions, [-1000.0, i, 0.0 ] );     // GJL TODO Check this      
+         linePositions.push.apply( linePositions, [-10.0, i-10, 0.0 ] );     // GJL TODO Check this      
          // add position for line end point (x value should be i)
-         linePositions.push.apply( linePositions, [1000.0, i, 0.0] );     // GJL TODO Check this      
+         linePositions.push.apply( linePositions, [10.0, i-10, 0.0] );     // GJL TODO Check this      
         }
         
         // specify the lateral lines
@@ -255,7 +255,7 @@
 
         triangleGeometry.worldMatrix.setRotationY(radian);
 
-        triangleGeometry.worldMatrix.translate(0, 0, -700);  // GJL TODO Should be 7 not 700
+        triangleGeometry.worldMatrix.translate(0, 0, -300);  // GJL TODO Should be 7 not 700
         
         // Compute the matrices
 
