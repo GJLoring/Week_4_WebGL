@@ -33,7 +33,7 @@
     precision mediump float;
 
     varying vec3 vColor;
-
+    uniform float uTime;      // TODO EXTRA CREDIT #2
     void main(void) {
         gl_FragColor = vec4(vColor, 1.0);
     }
@@ -193,18 +193,18 @@
 
         // specify the horizontal lines
         for (var i = -10; i <= 10; ++i) {
-            linePositions.push( i,  1, 0,  
-                               -i, -1, 0 );     // GJL Check this      
-            // add position for line start point (x value should be i)
-            // add position for line end point (x value should be i)
+         // add position for line start point (x value should be i)   
+         linePositions.push.apply( linePositions, [i,  1.0, 0.0 ] );     // GJL TODO Check this      
+         // add position for line end point (x value should be i)
+         linePositions.push.apply( linePositions, [-i, -1.0, 0.0] );     // GJL TODO Check this      
         }
         
         // specify the lateral lines
         for (var i = -10; i <= 10; ++i) {
-            linePositions.push(  0,  1, i,  
-                                 0, -1, i ); // GJL Check this  
             // add position for line start point (z value should be i)
+            linePositions.push.apply( linePositions, [ 0.0,  1.0, i ] );     // GJL TODO Check this        
             // add position for line end point (z value should be i)
+            linePositions.push.apply( linePositions, [ 0.0, -1.0, i ] );     // GJL TODO Check this      
         }
 
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(linePositions), gl.STATIC_DRAW);
@@ -222,11 +222,12 @@
         lineGridGeometry.positionBuffer = positionBuffer;
         lineGridGeometry.colorBuffer = colorBuffer;
         lineGridGeometry.bufferItemCount = 2 * 21 * 2;
-        lineGridGeometry.bufferItemCount = 2; //GJL Fix this
+        lineGridGeometry.bufferItemCount = 2; //GJL TODO Fix this line above is from assignment and SHOULD WORK
     }
 
     // -------------------------------------------------------------------------
     function updateAndRender(timeElapsed) {
+        var currentFrameTime = new Date().getTime();
         var seconds = timeElapsed * 0.001;
         var rotation = Math.sin(seconds)*0.5;
         requestAnimationFrame(updateAndRender);
@@ -246,7 +247,7 @@
     function renderTriangle(secondsElapsedSinceStart) {
         // calculate the number of degrees we should have rotated given how much time has elapsed
         // 60 degrees per second
-        var degrees = secondsElapsedSinceStart * 5;
+        var degrees = secondsElapsedSinceStart * 5;  // TODO Set back to 60 and update for Extra Credit #1
         var radian = Math.PI * degrees / 180.0;
 
         // todo update the triangle geometry world matrix here (used to place the triangle into world space)
@@ -289,7 +290,8 @@
 
         // Send our matrices to the shader
         gl.uniformMatrix4fv(shaderProgram.worldMatrixUniform, false, triangleGeometry.worldMatrix.clone().transpose().elements);
-        gl.uniformMatrix4fv(shaderProgram.viewMatrixUniform, false, viewMatrix.clone().transpose().elements);
+        gl.uniform1f(shaderProgram.timeUniform, Math.sin(secondsElapsedSinceStart));  // TODO Extra Credit #2 otherwise cooment out and uncomment line below
+        //gl.uniformMatrix4fv(shaderProgram.viewMatrixUniform, false, viewMatrix.clone().transpose().elements);
         gl.uniformMatrix4fv(shaderProgram.projectionMatrixUniform, false, projectionMatrix.clone().transpose().elements);
 
         gl.drawArrays(gl.TRIANGLES, 0, triangleGeometry.bufferItemCount);
