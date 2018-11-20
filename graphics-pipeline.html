@@ -195,9 +195,9 @@
         // specify the horizontal lines
         for (var i = -10; i <= 10; ++i) {
          // add position for line start point (x value should be i)   
-         linePositions.push.apply( linePositions, [-100.0, i, -275.0 ] );     // GJL TODO Check this      
+         linePositions.push.apply( linePositions, [-1000.0, i, 0.0 ] );     // GJL TODO Check this      
          // add position for line end point (x value should be i)
-         linePositions.push.apply( linePositions, [100.0, i, -275.0] );     // GJL TODO Check this      
+         linePositions.push.apply( linePositions, [1000.0, i, 0.0] );     // GJL TODO Check this      
         }
         
         // specify the lateral lines
@@ -205,7 +205,7 @@
             // add position for line start point (z value should be i)
             linePositions.push.apply( linePositions, [ i,  0.0, 0.0 ] );     // GJL TODO Check this        
             // add position for line end point (z value should be i)
-            linePositions.push.apply( linePositions, [ i, -10.0, 1000.0 ] );     // GJL TODO Check this      
+            linePositions.push.apply( linePositions, [ i, -10.0, 2000.0 ] );     // GJL TODO Check this      
         }                                              
     
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(linePositions), gl.STATIC_DRAW);
