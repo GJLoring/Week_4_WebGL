@@ -238,7 +238,7 @@
         gl.clearColor(0.707, 0.707, 1, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        renderTriangle(0);
+        renderTriangle(timeElapsed);
         renderLines(timeElapsed);
     }
 
@@ -249,7 +249,15 @@
         var degrees = secondsElapsedSinceStart * 60;
 
         // todo update the triangle geometry world matrix here (used to place the triangle into world space)
+        //  Uncomment below renders side? of triangle
+        //triangleGeometry.worldMatrix.set(0, 0, -7);
+        // Compute the matrices
+
+         // Set the matrix.
+
         // todo set view matrix to identity
+        viewMatrix = new Matrix4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+        projectionMatrix = new Matrix4(0.785, 0.1, 1000);
         // todo set the projection matrix using values from online guide
 
         gl.bindBuffer(gl.ARRAY_BUFFER, triangleGeometry.positionBuffer);
@@ -291,6 +299,10 @@
         // todo bind and map(gl.vertexAttribPointer) the buffers
 
         // todo - send matrices to shader
+        gl.uniformMatrix4fv(shaderProgram.worldMatrixUniform, false, lineGridGeometry.worldMatrix.clone().transpose().elements);
+        gl.uniformMatrix4fv(shaderProgram.viewMatrixUniform, false, viewMatrix.clone().transpose().elements);
+        gl.uniformMatrix4fv(shaderProgram.projectionMatrixUniform, false, projectionMatrix.clone().transpose().elements);
+
 
         // --------------------------------------------
         // below is done for you, uncomment when ready
