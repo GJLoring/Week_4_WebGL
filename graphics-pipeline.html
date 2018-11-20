@@ -295,10 +295,12 @@
     function renderLines(time) {
         // todo update the triangle geometry world matrix here (used to place the triangle into world space)
         // todo set view matrix to identity
-        var u_ViewMatrix = new Matrix4([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
+        lineGridGeometry.worldMatrix.identity();
+        lineGridGeometry.worldMatrix.translate(0, 0, -7);
 
         // todo set the projection matrix using values from online guide
-
+        // It takes 4 arguments consisting of vertical field of view, aspect ratio, near plane distance, and far plane distance.
+        projectionMatrix.setPerspective(0.785, 1, 0.1, 1000);
         // todo bind and map(gl.vertexAttribPointer) the buffers
 
         // todo - send matrices to shader
