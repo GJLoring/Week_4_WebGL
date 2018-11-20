@@ -42,6 +42,7 @@
 <script type="text/javascript">
 
     var gl;
+    var FOV = Math.PI * 45 / 180.0;
 
     // The core data associated with the triangle that we will need to render it
     var triangleGeometry = {
@@ -184,7 +185,7 @@
         lineGridGeometry.worldMatrix = new Matrix4();
 
         // specify the shader which carries the instructions for "how" to render
-        triangleGeometry.shaderProgram = shaderProgram;
+        lineGridGeometry.shaderProgram = shaderProgram;
 
         var positionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -205,8 +206,8 @@
             linePositions.push.apply( linePositions, [ 0.0,  1.0, i ] );     // GJL TODO Check this        
             // add position for line end point (z value should be i)
             linePositions.push.apply( linePositions, [ 0.0, -1.0, i ] );     // GJL TODO Check this      
-        }
-
+        }                                              
+    
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(linePositions), gl.STATIC_DRAW);
 
         var colorBuffer = gl.createBuffer();
@@ -222,7 +223,7 @@
         lineGridGeometry.positionBuffer = positionBuffer;
         lineGridGeometry.colorBuffer = colorBuffer;
         lineGridGeometry.bufferItemCount = 2 * 21 * 2;
-        lineGridGeometry.bufferItemCount = 2; //GJL TODO Fix this line above is from assignment and SHOULD WORK
+        //lineGridGeometry.bufferItemCount = 2; //GJL TODO Fix this line above is from assignment and SHOULD WORK
     }
 
     // -------------------------------------------------------------------------
@@ -255,7 +256,7 @@
 
         triangleGeometry.worldMatrix.setRotationY(radian);
 
-        triangleGeometry.worldMatrix.translate(0, 0, -7);
+        triangleGeometry.worldMatrix.translate(0, 0, -700);  // GJL TODO Should be 7 not 700
         
         // Compute the matrices
 
@@ -265,8 +266,10 @@
         viewMatrix.identity();
 
         // todo set the projection matrix using values from online guide
+        var aspect_ratio = gl.canvasWidth / gl.canvasHeight;
+        
         // It takes 4 arguments consisting of vertical field of view, aspect ratio, near plane distance, and far plane distance.
-        projectionMatrix.setPerspective(0.785, 1, 0.1, 1000);
+        projectionMatrix.setPerspective(FOV, aspect_ratio, 0.1, 1000);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, triangleGeometry.positionBuffer);
         gl.vertexAttribPointer(
@@ -291,7 +294,7 @@
         // Send our matrices to the shader
         gl.uniformMatrix4fv(shaderProgram.worldMatrixUniform, false, triangleGeometry.worldMatrix.clone().transpose().elements);
         gl.uniform1f(shaderProgram.timeUniform, Math.sin(secondsElapsedSinceStart));  // TODO Extra Credit #2 otherwise cooment out and uncomment line below
-        //gl.uniformMatrix4fv(shaderProgram.viewMatrixUniform, false, viewMatrix.clone().transpose().elements);
+        gl.uniformMatrix4fv(shaderProgram.viewMatrixUniform, false, viewMatrix.clone().transpose().elements);
         gl.uniformMatrix4fv(shaderProgram.projectionMatrixUniform, false, projectionMatrix.clone().transpose().elements);
 
         gl.drawArrays(gl.TRIANGLES, 0, triangleGeometry.bufferItemCount);
@@ -302,11 +305,12 @@
         // todo update the triangle geometry world matrix here (used to place the triangle into world space)
         // todo set view matrix to identity
         lineGridGeometry.worldMatrix.identity();
-        lineGridGeometry.worldMatrix.translate(0, 0, -7);
+        lineGridGeometry.worldMatrix.translate(0, 0, -700);  // GJL TODO Should be 7 not 700
 
         // todo set the projection matrix using values from online guide
         // It takes 4 arguments consisting of vertical field of view, aspect ratio, near plane distance, and far plane distance.
-        projectionMatrix.setPerspective(0.785, 1, 0.1, 1000);
+        var aspect_ratio = gl.canvasWidth / gl.canvasHeight;
+        projectionMatrix.setPerspective(FOV, aspect_ratio, 0.1, 1000);
         // todo bind and map(gl.vertexAttribPointer) the buffers
 
         // todo - send matrices to shader

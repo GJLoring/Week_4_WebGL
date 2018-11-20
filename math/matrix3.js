@@ -8,211 +8,195 @@ var Matrix3 = function() {
 	// This format will be similar to what we'll eventually need when feeding this to WebGL
 	this.elements = new Float32Array(9);
 
-	// todo
-	// this.elements should be initialized with values equal to the identity matrix
-	for (var i = 0; i < 9; ++i) {
-		this.elements[i] = (i % 3 == Math.floor(i / 3)) ? 1 : 0;
+	if (!(this instanceof Matrix3)) {
+		alert("Matrix3 constructor must be called with the new operator");
 	}
+
 	// -------------------------------------------------------------------------
 	this.clone = function() {
-		// todo
-		// create a new Matrix3 instance that is an exact copy of this one and return it
-		var other = new Matrix3();
-		for(x=0; x < this.elements.length;x++){
-			other.elements[x]=this.elements[x];
+		var newMatrix = new Matrix3();
+		for (var i = 0; i < 9; ++i) {
+			newMatrix.elements[i] = this.elements[i];
 		}
-		return other /* should be a new Matrix instance*/;
+		return newMatrix;
 	};
 
 	// -------------------------------------------------------------------------
 	this.copy = function(other) {
-		// todo
-		// copy all of the elements of other into the elements of 'this' matrix
-		for(x=0; x < this.elements.length;x++){
-			this.elements[x]=other.elements[x];
+		for (var i = 0; i < 16; ++i) {
+			this.elements[i] = other.elements[i];
 		}
+
 		return this;
 	};
 
 	// -------------------------------------------------------------------------
 	this.set = function (e11, e12, e13, e21, e22, e23, e31, e32, e33) {
-		// todo
-		// given the 9 elements passed in as argument e-row#col#, use
-		// them as the values to set on 'this' matrix
-		var x = 0;
-		this.elements[x++]= e11;
-		this.elements[x++]= e12;
-		this.elements[x++]= e13;
-		this.elements[x++]= e21;
-		this.elements[x++]= e22;
-		this.elements[x++]= e23;
-		this.elements[x++]= e31;
-		this.elements[x++]= e32;
-		this.elements[x++]= e33;
+		var e = this.elements;
+
+		e[0] = e11;   e[1] = e12;   e[2] = e13;
+		e[3] = e21;   e[4] = e22;   e[5] = e23;
+		e[6] = e31;   e[7] = e32;   e[8] = e33;
+
 		return this;
 	};
 
 	// -------------------------------------------------------------------------
 	this.getElement = function(row, col) {
-		// todo
-		// use the row and col to get the proper index into the 1d element array and return it
-		return this.elements[row*3+col];
+		return this.elements[3 * row + col];
 	};
 
 	// -------------------------------------------------------------------------
 	this.identity = function() {
-		// todo
-		// reset every element in 'this' matrix to make it the identity matrix
-		for (var i = 0; i < 9; ++i) {
-			this.elements[i] = (i % 3 == Math.floor(i / 3)) ? 1 : 0;
-		}
+		this.set(
+			1, 0, 0,
+			0, 1, 0,
+			0, 0, 1
+		);
 		return this;
 	};
 
 	// -------------------------------------------------------------------------
-	this.setRotationX = function(angle) {
-		// not required yet, attempt to implement if finished early
-		// create a rotation matrix that rotates around the X axis
+	this.setRotationX = function(degrees) {
+		var radians = degrees * Math.PI / 180;
+		var e = this.elements;
+		var c = Math.cos(radians);
+		var s = Math.sin(radians);
+
+		e[0] = 1;   e[1] = 0;   e[2] = 0;
+		e[3] = 0;   e[4] = c;   e[5] = -s;
+		e[6] = 0;   e[7] = s;   e[8] = c;
+
 		return this;
 	};
 
 	// -------------------------------------------------------------------------
-	this.setRotationY = function(angle) {
-		// not required yet, attempt to implement if finished early
-		// create a rotation matrix that rotates around the Y axis
+	this.setRotationY = function(degrees) {
+		var radians = degrees * Math.PI / 180;
+		var e = this.elements;
+		var c = Math.cos(radians);
+		var s = Math.sin(radians);
+
+		e[0] = c;   e[1] = 0;   e[2] = s;
+		e[3] = 0;   e[4] = 1;   e[5] = 0;
+		e[6] = -s;  e[7] = 0;   e[8] = c;
+
 		return this;
 	};
 
 
 	// -------------------------------------------------------------------------
-	this.setRotationZ = function(angle) {
-		// not required yet, attempt to implement if finished early
-		// create a rotation matrix that rotates around the Z axis
+	this.setRotationZ = function(degrees) {
+		var radians = degrees * Math.PI / 180;
+		var e = this.elements;
+		var c = Math.cos(radians);
+		var s = Math.sin(radians);
+
+		e[0] = c;   e[1] = -s;  e[2] = 0;
+		e[3] = s;   e[4] = c;   e[5] = 0;
+		e[6] = 0;   e[7] = 0;   e[8] = 1;
+
 		return this;
 	};
 
 	// -------------------------------------------------------------------------
 	this.multiplyScalar = function(s) {
-		// todo
-		// multiply every element in 'this' matrix by the scalar argument s
-		for (var i = 0; i < 9; ++i) {
-			this.elements[i] = this.elements[i]*s;
+		for (var i = 0; i < 16; ++i) {
+			this.elements[i] = this.elements[i] * s;
 		}
-		return this;
 	};
 
 	// -------------------------------------------------------------------------
 	this.multiplyRightSide = function(otherMatrixOnRight) {
-		// todo
-		// multiply 'this' matrix (on the left) by otherMatrixOnRight (on the right)
-		// the results should be applied to the elements on 'this' matrix
-		var tmp = new Float32Array(9);
-		for(x=0; x < tmp.length;x++){
-			tmp[x]=0;
-		}
-		for (var col = 0; col < 3; col++) {
-			for (var row = 0; row < 3; row++) {
-				var i =  col*3+row;
-				for( var u = 0; u < 3; u++){
-						var h = col*3+u;
-						var j = u*3+row;
-						tmp[i] = tmp[i] + this.elements[h]*otherMatrixOnRight.elements[j];
+		// shorthand
+		var te = this.elements;
+		var oe = otherMatrixOnRight.elements;
 
-				}
-			}
-		}
-		for(x=0; x < tmp.length;x++){
-			this.elements[x] = tmp[x];
-		}
+		var m11 = te[0] * oe[0] + te[1] * oe[3] + te[2] * oe[6];
+		var m12 = te[0] * oe[1] + te[1] * oe[4] + te[2] * oe[7];
+		var m13 = te[0] * oe[2] + te[1] * oe[5] + te[2] * oe[8];
+
+		var m21 = te[3] * oe[0] + te[4] * oe[3] + te[5] * oe[6];
+		var m22 = te[3] * oe[1] + te[4] * oe[4] + te[5] * oe[7];
+		var m23 = te[3] * oe[2] + te[4] * oe[5] + te[5] * oe[8];
+
+		var m31 = te[6] * oe[0] + te[7] * oe[3] + te[8] * oe[6];
+		var m32 = te[6] * oe[1] + te[7] * oe[4] + te[8] * oe[7];
+		var m33 = te[6] * oe[2] + te[7] * oe[5] + te[8] * oe[8];
+
+		this.set(m11, m12, m13, m21, m22, m23, m31, m32, m33);
+
 		return this;
 	};
 
 	// -------------------------------------------------------------------------
+	this.multiplyVector = function(vector) {
+		// shorthand
+		var te = this.elements;
+		var clone = vector.clone();
+		vector.x = te[0] * clone.x + te[1] * clone.y + te[2] * clone.z;
+		vector.y = te[3] * clone.x + te[4] * clone.y + te[5] * clone.z;
+		vector.z = te[6] * clone.x + te[7] * clone.y + te[8] * clone.z;
+	}
+
+	// -------------------------------------------------------------------------
 	this.determinant = function() {
-		// todo
-		// compute and return the determinant for 'this' matrix
-		var x = 0;
-		var a = this.elements[x++];
-		var b = this.elements[x++];
-		var c = this.elements[x++];
-		var d = this.elements[x++];
-		var e = this.elements[x++];
-		var f = this.elements[x++];
-		var g = this.elements[x++];
-		var h = this.elements[x++];
-		var i = this.elements[x++];
-		var det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
-		return det; // should be the determinant
+		var e = this.elements;
+
+		// laid out for clarity, not performance
+		var m11 = e[0];   var m12 = e[1];   var m13 = e[2];
+		var m21 = e[3];   var m22 = e[4];   var m23 = e[5];
+		var m31 = e[6];   var m32 = e[7];   var m33 = e[8];
+
+		var minor11 = m22 * m33 - m23 * m32;
+		var minor12 = m21 * m33 - m23 * m31;
+		var minor13 = m21 * m32 - m22 * m31;
+
+		return m11 * minor11 - m12 * minor12 + m13 * minor13;
 	};
 
 	// -------------------------------------------------------------------------
 	this.transpose = function() {
-		// todo
-		// modify 'this' matrix so that it becomes its transpose
-		/*
-		0,4,8 Doesnt matter
-		1,2,5 XOR Col with row below
-		3,6,7
-		*/
-		var swapElms=[1,2,5];
-		for (var i = 0; i <swapElms.length; ++i) {
-            var row = Math.floor(swapElms[i] / 3);
-			var col = swapElms[i] % 3;
-			var rc = row*3+col;
-			var cr = col*3+row;
-			var tmp = this.elements[rc];
-			this.elements[rc] = this.elements[cr];
-            this.elements[cr] = tmp;
-        }
+		var e = this.elements;
+		var tmp;
+
+		tmp = e[1];   e[1] = e[3];   e[3] = tmp;
+		tmp = e[2];   e[2] = e[6];   e[6] = tmp;
+		tmp = e[5];   e[5] = e[7];   e[7] = tmp;
+
 		return this;
 	};
 
 	// -------------------------------------------------------------------------
 	this.inverse = function() {
-		// todo
-		// modify 'this' matrix so that it becomes its inverse
-		var invDet = 1/this.determinant();  //Find this BEFORE anything else
+		var FLOAT32_EPSILON = 1.1920928955078125e-7;
+		var det = this.determinant();
+		if(Math.abs(det) <= FLOAT32_EPSILON) {
+			return identity();
+		} else {
+			var e = this.elements;
 
-		//Create matrix of minors
-		var tmp = new Float32Array(9);
-		for(x=0; x < tmp.length;x++){
-			tmp[x]=0;
-		}
-		for (var col = 0; col < 3; col++) {
-			for (var row = 0; row < 3; row++) {
-				var i =  col*3+row;
-				var minors = new Float32Array(4);
-				var minorCount = 0;
-				for( var u = 0; u < 3; u++){
-					if(u!=col){
-						for( var v = 0; v < 3; v++){
-							if(v!=row){
-								minors[minorCount]= this.elements[u*3+v];
-								minorCount= minorCount+1;
-							}
-						}
-					}
-				}
-				tmp[i] = minors[0]*minors[3] - minors[1]*minors[2];
-			}
-		}
-		for(x=0; x < tmp.length;x++){
-			this.elements[x]= tmp[x];
-		}
+			// laid out for clarity, not performance
+			var m11 = e[0];   var m12 = e[1];   var m13 = e[2];
+			var m21 = e[3];   var m22 = e[4];   var m23 = e[5];
+			var m31 = e[6];   var m32 = e[7];   var m33 = e[8];
 
-		//Compute co factors
-		for(x=0; x < this.elements.length;x+=2){
-			this.elements[x] = this.elements[x]*-1;
-		}
+			var minor11 = m22 * m33 - m23 * m32;
+			var minor12 = m21 * m33 - m23 * m31;
+			var minor13 = m21 * m32 - m22 * m31;
+			var minor21 = m12 * m33 - m13 * m32;
+			var minor22 = m11 * m33 - m13 * m31;
+			var minor23 = m11 * m32 - m12 * m31;
+			var minor31 = m12 * m23 - m13 * m22;
+			var minor32 = m11 * m33 - m13 * m31;
+			var minor33 = m11 * m22 - m12 * m21;
 
-		//Adjugate
-		this.transpose();
-
-		//Multiply by 1/Determinant
-		for(x=0; x < this.elements.length;x++){
-			this.elements[x] = this.elements[x]*invDet * -1;
+			return this.set(
+				minor11, -minor21, minor31,
+				-minor12, minor22, -minor32,
+				minor13, -minor23, minor33
+			).multiplyScalar(1/det);
 		}
-		return this;
 	};
 
 	// -------------------------------------------------------------------------
@@ -228,4 +212,7 @@ var Matrix3 = function() {
 
 		return this;
 	};
+
+	// default value
+	this.identity();
 };
