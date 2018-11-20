@@ -195,17 +195,17 @@
         // specify the horizontal lines
         for (var i = -10; i <= 10; ++i) {
          // add position for line start point (x value should be i)   
-         linePositions.push.apply( linePositions, [i,  1.0, 0.0 ] );     // GJL TODO Check this      
+         linePositions.push.apply( linePositions, [100.0, i, 0.0 ] );     // GJL TODO Check this      
          // add position for line end point (x value should be i)
-         linePositions.push.apply( linePositions, [-i, -1.0, 0.0] );     // GJL TODO Check this      
+         linePositions.push.apply( linePositions, [-100.0, i, 0.0] );     // GJL TODO Check this      
         }
         
         // specify the lateral lines
         for (var i = -10; i <= 10; ++i) {
             // add position for line start point (z value should be i)
-            linePositions.push.apply( linePositions, [ 0.0,  1.0, i ] );     // GJL TODO Check this        
+            linePositions.push.apply( linePositions, [ i,  100.0, 0 ] );     // GJL TODO Check this        
             // add position for line end point (z value should be i)
-            linePositions.push.apply( linePositions, [ 0.0, -1.0, i ] );     // GJL TODO Check this      
+            linePositions.push.apply( linePositions, [ i, -100.0, 0 ] );     // GJL TODO Check this      
         }                                              
     
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(linePositions), gl.STATIC_DRAW);
@@ -223,7 +223,6 @@
         lineGridGeometry.positionBuffer = positionBuffer;
         lineGridGeometry.colorBuffer = colorBuffer;
         lineGridGeometry.bufferItemCount = 2 * 21 * 2;
-        //lineGridGeometry.bufferItemCount = 2; //GJL TODO Fix this line above is from assignment and SHOULD WORK
     }
 
     // -------------------------------------------------------------------------
@@ -312,6 +311,26 @@
         var aspect_ratio = gl.canvasWidth / gl.canvasHeight;
         projectionMatrix.setPerspective(FOV, aspect_ratio, 0.1, 1000);
         // todo bind and map(gl.vertexAttribPointer) the buffers
+        gl.bindBuffer(gl.ARRAY_BUFFER, lineGridGeometry.positionBuffer);
+        gl.vertexAttribPointer(
+            shaderProgram.vertexPositionAttribute,
+            3,
+            gl.FLOAT,
+            gl.FALSE,
+            0, // stride - used for mixing data in a single buffer, ignore
+            0  // offset - used for mixing data in a single buffer, ignore
+        );
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, lineGridGeometry.colorBuffer);
+        gl.vertexAttribPointer(
+            shaderProgram.vertexColorAttribute,
+            3,
+            gl.FLOAT,
+            gl.FALSE,
+            0, // stride - used for mixing data in a single buffer, ignore
+            0  // offset - used for mixing data in a single buffer, ignore
+        );
+
 
         // todo - send matrices to shader
         gl.uniformMatrix4fv(shaderProgram.worldMatrixUniform, false, lineGridGeometry.worldMatrix.clone().transpose().elements);
