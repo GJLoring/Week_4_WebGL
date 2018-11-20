@@ -193,16 +193,16 @@
 
         // specify the horizontal lines
         for (var i = -10; i <= 10; ++i) {
-            linePositions.push([0,0,0]);
-            linePositions.push([0,0,0]);
+            linePositions.push( i,  1, 0,  
+                               -i, -1, 0 );     // GJL Check this      
             // add position for line start point (x value should be i)
             // add position for line end point (x value should be i)
         }
-
+        
         // specify the lateral lines
         for (var i = -10; i <= 10; ++i) {
-            linePositions.push([0,0,0]);
-            linePositions.push([0,0,0]);
+            linePositions.push(  0,  1, i,  
+                                 0, -1, i ); // GJL Check this  
             // add position for line start point (z value should be i)
             // add position for line end point (z value should be i)
         }
@@ -222,6 +222,7 @@
         lineGridGeometry.positionBuffer = positionBuffer;
         lineGridGeometry.colorBuffer = colorBuffer;
         lineGridGeometry.bufferItemCount = 2 * 21 * 2;
+        lineGridGeometry.bufferItemCount = 2; //GJL Fix this
     }
 
     // -------------------------------------------------------------------------
@@ -238,7 +239,7 @@
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         renderTriangle(0);
-        renderLines();
+        renderLines(timeElapsed);
     }
 
     // -------------------------------------------------------------------------
@@ -250,9 +251,6 @@
         // todo update the triangle geometry world matrix here (used to place the triangle into world space)
         // todo set view matrix to identity
         // todo set the projection matrix using values from online guide
-        gl.uniformMatrix4fv(shaderProgram.worldMatrixUniform, false, triangleGeometry.worldMatrix.clone().transpose().elements);
-        gl.uniformMatrix4fv(shaderProgram.viewMatrixUniform, false, viewMatrix.clone().transpose().elements);
-        gl.uniformMatrix4fv(shaderProgram.projectionMatrixUniform, false, projectionMatrix.clone().transpose().elements);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, triangleGeometry.positionBuffer);
         gl.vertexAttribPointer(
@@ -283,9 +281,11 @@
     }
 
     // -------------------------------------------------------------------------
-    function renderLines() {
+    function renderLines(time) {
         // todo update the triangle geometry world matrix here (used to place the triangle into world space)
         // todo set view matrix to identity
+        var u_ViewMatrix = new Matrix4([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
+
         // todo set the projection matrix using values from online guide
 
         // todo bind and map(gl.vertexAttribPointer) the buffers
@@ -296,6 +296,7 @@
         // below is done for you, uncomment when ready
 
         //gl.uniform1f(shaderProgram.timeUniform, time.secondsElapsedSinceStart);
+
         gl.uniform1f(shaderProgram.timeUniform, 1);  //need to figure out time.secondsElapsedSinceStart is this soething we create
 
         gl.drawArrays(gl.LINES, 0, lineGridGeometry.bufferItemCount);
