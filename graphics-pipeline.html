@@ -42,7 +42,7 @@
 <script type="text/javascript">
 
     var gl;
-    var FOV = Math.PI * 45 / 180.0;
+    var FOV = Math.PI * 45 / 180.0; //From assignment
 
     // The core data associated with the triangle that we will need to render it
     var triangleGeometry = {
@@ -93,7 +93,6 @@
         if (!gl) {
             alert("Could not initialise WebGL, sorry :-(");
         }
-
         gl.enable(gl.DEPTH_TEST);
     }
 
