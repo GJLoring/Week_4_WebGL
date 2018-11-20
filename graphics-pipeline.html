@@ -246,10 +246,14 @@
     function renderTriangle(secondsElapsedSinceStart) {
         // calculate the number of degrees we should have rotated given how much time has elapsed
         // 60 degrees per second
-        var degrees = secondsElapsedSinceStart * 60;
+        var degrees = secondsElapsedSinceStart * 5;
+        var radian = Math.PI * degrees / 180.0;
 
         // todo update the triangle geometry world matrix here (used to place the triangle into world space)
         triangleGeometry.worldMatrix.identity();
+
+        triangleGeometry.worldMatrix.setRotationY(radian);
+
         triangleGeometry.worldMatrix.translate(0, 0, -7);
         
         // Compute the matrices
