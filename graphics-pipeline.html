@@ -249,16 +249,19 @@
         var degrees = secondsElapsedSinceStart * 60;
 
         // todo update the triangle geometry world matrix here (used to place the triangle into world space)
-        //  Uncomment below renders side? of triangle
-        //triangleGeometry.worldMatrix.set(0, 0, -7);
+        triangleGeometry.worldMatrix.identity();
+        triangleGeometry.worldMatrix.translate(0, 0, -7);
+        
         // Compute the matrices
 
-         // Set the matrix.
+        // Set the matrix.
 
         // todo set view matrix to identity
-        viewMatrix = new Matrix4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
-        projectionMatrix = new Matrix4(0.785, 0.1, 1000);
+        viewMatrix.identity();
+
         // todo set the projection matrix using values from online guide
+        // It takes 4 arguments consisting of vertical field of view, aspect ratio, near plane distance, and far plane distance.
+        projectionMatrix.setPerspective(0.785, 1, 0.1, 1000);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, triangleGeometry.positionBuffer);
         gl.vertexAttribPointer(
