@@ -33,7 +33,7 @@
     precision mediump float;
 
     varying vec3 vColor;
-    uniform float uTime;      // TODO EXTRA CREDIT #2
+    uniform float f;      // TODO EXTRA CREDIT #2
     void main(void) {
         gl_FragColor = vec4(vColor, 1.0);
     }
@@ -50,7 +50,7 @@
         shaderProgram: null,     // the shader program of "how" to render this object (vertex & fragment)
         positionBuffer: null,    // the buffer that holds all of the position data
         colorBuffer: null,       // the buffer that holds all of the color data
-        bufferItemCount: 3,      // GJL NOTE null in sample?! how many vertices the buffer contains
+        bufferItemCount: 3,      // GJL TODO NOTE null in sample?! how many vertices the buffer contains
     };
 
     // The core data associated with the line grid that we will need to render it
@@ -194,18 +194,14 @@
 
         // specify the horizontal lines
         for (var i = -10; i <= 10; ++i) {
-         // add position for line start point (x value should be i)   
-         linePositions.push.apply( linePositions, [-10.0, i-10, 0.0 ] );     // GJL TODO Check this      
-         // add position for line end point (x value should be i)
-         linePositions.push.apply( linePositions, [10.0, i-10, 0.0] );     // GJL TODO Check this      
+         linePositions.push.apply( linePositions, [-10.0, i-10, 0.0 ] );     // GJL TODO Check this // add position for line start point (x value should be i)  
+         linePositions.push.apply( linePositions, [10.0, i-10, 0.0] );     // GJL TODO Check this // add position for line end point (x value should be i)
         }
         
         // specify the lateral lines
         for (var i = -10; i <= 10; ++i) {
-            // add position for line start point (z value should be i)
-            linePositions.push.apply( linePositions, [ i,  0.0, 0.0 ] );     // GJL TODO Check this        
-            // add position for line end point (z value should be i)
-            linePositions.push.apply( linePositions, [ i, -10.0, 2000.0 ] );     // GJL TODO Check this      
+            linePositions.push.apply( linePositions, [ i,  0.0, 0.0 ] );     // GJL TODO Check this  // add position for line start point (z value should be i)      
+            linePositions.push.apply( linePositions, [ i, -10.0, 2000.0 ] );     // GJL TODO Check this             // add position for line end point (z value should be i)     
         }                                              
     
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(linePositions), gl.STATIC_DRAW);
@@ -292,7 +288,7 @@
 
         // Send our matrices to the shader
         gl.uniformMatrix4fv(shaderProgram.worldMatrixUniform, false, triangleGeometry.worldMatrix.clone().transpose().elements);
-        gl.uniform1f(shaderProgram.timeUniform, Math.sin(secondsElapsedSinceStart));  // TODO Extra Credit #2 otherwise cooment out and uncomment line below
+        gl.uniform1f(shaderProgram.uTime, Math.sin(secondsElapsedSinceStart));  // TODO Extra Credit #2 otherwise cooment out and uncomment line below
         gl.uniformMatrix4fv(shaderProgram.viewMatrixUniform, false, viewMatrix.clone().transpose().elements);
         gl.uniformMatrix4fv(shaderProgram.projectionMatrixUniform, false, projectionMatrix.clone().transpose().elements);
 
@@ -302,12 +298,10 @@
     // -------------------------------------------------------------------------
     function renderLines(time) {
         // todo update the triangle geometry world matrix here (used to place the triangle into world space)
-        // todo set view matrix to identity
-        lineGridGeometry.worldMatrix.identity();
+        lineGridGeometry.worldMatrix.identity();              // todo set view matrix to identity
         lineGridGeometry.worldMatrix.translate(0, 0, -700);  // GJL TODO Should be 7 not 700
 
         // todo set the projection matrix using values from online guide
-        // It takes 4 arguments consisting of vertical field of view, aspect ratio, near plane distance, and far plane distance.
         var aspect_ratio = gl.canvasWidth / gl.canvasHeight;
         projectionMatrix.setPerspective(FOV, aspect_ratio, 0.1, 1000);
         // todo bind and map(gl.vertexAttribPointer) the buffers
@@ -341,9 +335,7 @@
         // --------------------------------------------
         // below is done for you, uncomment when ready
 
-        //gl.uniform1f(shaderProgram.timeUniform, time.secondsElapsedSinceStart);
-
-        gl.uniform1f(shaderProgram.timeUniform, 1);  //need to figure out time.secondsElapsedSinceStart is this soething we create
+        gl.uniform1f(shaderProgram.timeUniform, time);
 
         gl.drawArrays(gl.LINES, 0, lineGridGeometry.bufferItemCount);
     }
