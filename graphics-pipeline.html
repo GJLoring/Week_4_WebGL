@@ -33,7 +33,7 @@
     precision mediump float;
 
     varying vec3 vColor;
-    uniform float f;      // TODO EXTRA CREDIT #2
+    uniform float uTime;      // TODO EXTRA CREDIT #2
     void main(void) {
         gl_FragColor = vec4(vColor, 1.0);
     }
@@ -234,16 +234,17 @@
         gl.clearColor(0.707, 0.707, 1, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        renderTriangle(timeElapsed);
-        renderLines(timeElapsed);
+        renderTriangle(seconds);
+        renderLines(seconds);
     }
 
     // -------------------------------------------------------------------------
     function renderTriangle(secondsElapsedSinceStart) {
         // calculate the number of degrees we should have rotated given how much time has elapsed
         // 60 degrees per second
-        var degrees = secondsElapsedSinceStart * 5;  // TODO Set back to 60 and update for Extra Credit #1
+        var degrees = secondsElapsedSinceStart * 60;  // Extra Credit #1
         var radian = Math.PI * degrees / 180.0;
+        var radian = degrees;
 
         // todo update the triangle geometry world matrix here (used to place the triangle into world space)
         triangleGeometry.worldMatrix.identity();
